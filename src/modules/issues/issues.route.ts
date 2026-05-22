@@ -5,6 +5,11 @@ import { userRoles } from "../../types";
 
 const router = Router();
 
-router.post("/",auth(), issuesController.createIssues);
+router.post(
+  "/",
+  auth(userRoles.contributor, userRoles.maintainer),
+  issuesController.createIssues,
+);
+router.get("/", issuesController.getAllIssues);
 
 export const issuesRoute = router;

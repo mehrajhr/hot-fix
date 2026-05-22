@@ -24,6 +24,38 @@ const createIssues = async (req: Request, res: Response) => {
   }
 };
 
+const getAllIssues = async (req: Request, res: Response) => {
+  try {
+    const type = (req.query?.type as string) || null;
+    const status = (req.query?.status as string) || null;
+    const sort = (req.query?.sort as string) || "newest";
+
+    const queries = {
+      sort,
+      type,
+      status,
+    };
+
+    //   console.log(queries)
+
+    const result = await isssuesService.getAllIssuesFromDB(queries);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Issues retrived succesfully",
+      data: result,
+    });
+  } catch (error) {
+    sendResponse(res, {
+      statusCode: 500,
+      success: false,
+      message: "Something went wrong",
+    });
+  }
+};
+
 export const issuesController = {
   createIssues,
+  getAllIssues,
 };
