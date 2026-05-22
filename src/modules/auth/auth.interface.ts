@@ -4,3 +4,9 @@ export interface Iuser {
   password: string;
   role?: "contributor" | "maintainer";
 }
+
+
+export type ILoginPayload = {
+  email: string;
+  password: string;
+};

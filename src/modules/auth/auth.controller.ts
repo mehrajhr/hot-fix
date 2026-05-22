@@ -14,7 +14,29 @@ const signUpUser = async (req: Request, res: Response) => {
   } catch (error: any) {
     const statusCode = error.statusCode || 500;
     const message = statusCode === 500 ? "Something went wrong" : error.message;
-    console.log(error);
+    sendResponse(res, {
+      statusCode: statusCode,
+      success: false,
+      message: message,
+    });
+  }
+};
+
+const loginUser = async (req: Request, res: Response) => {
+  try {
+    const result = await authService.loginUserIntoDB(req.body);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Login successful",
+      data: {
+        token: result.accesstoken,
+        user: result.user,
+      },
+    });
+  } catch (error: any) {
+    const statusCode = error.statusCode || 500;
+    const message = statusCode === 500 ? "Something went wrong" : error.message;
     sendResponse(res, {
       statusCode: statusCode,
       success: false,
@@ -25,4 +47,5 @@ const signUpUser = async (req: Request, res: Response) => {
 
 export const authController = {
   signUpUser,
+  loginUser,
 };

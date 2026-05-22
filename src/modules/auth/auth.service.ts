@@ -1,7 +1,9 @@
 import bcrypt from "bcryptjs";
 import { AppError } from "../../utility/AppError";
-import type { Iuser } from "./auth.interface";
+import type { ILoginPayload, Iuser } from "./auth.interface";
 import { pool } from "../../db";
+import jwt from "jsonwebtoken";
+import config from "../../config";
 
 const createUserInDB = async (payload: Iuser) => {
   const { name, email, password, role } = payload;
@@ -25,6 +27,54 @@ const createUserInDB = async (payload: Iuser) => {
   return result;
 };
 
+const loginUserIntoDB = async (payload: ILoginPayload) => {
+  if (!payload) {
+    throw new AppError(400, "Invalid input");
+  }
+  //   console.log(payload);
+
+  const { email, password } = payload;
+
+  if (!email || !password) {
+    throw new AppError(400, "Both email and password are required");
+  }
+
+  const userData = await pool.query(
+    `
+        SELECT * FROM users WHERE email=$1
+        `,
+    [email],
+  );
+
+  if (userData.rowCount === 0) {
+    throw new AppError(401, "Invalid credentials!");
+  }
+
+  const user = userData.rows[0];
+  //   console.log(user);
+
+  const passwordMatch = await bcrypt.compare(password, user.password);
+  //   console.log(passwordMatch);
+
+  if (!passwordMatch) {
+    throw new AppError(401, "Invalid credentials!");
+  }
+
+  const jwtPayload = {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+  };
+
+  const accesstoken = jwt.sign(jwtPayload, config.secret as string, {
+    expiresIn: (config.expiresIn || "1h") as any,
+  });
+  delete user.password;
+  return { accesstoken, user };
+};
+
 export const authService = {
   createUserInDB,
+  loginUserIntoDB,
 };
