@@ -5,6 +5,6 @@ import { userRoles } from "../../types";
 
 const router = Router();
 
-router.post("/",auth(userRoles.maintainer), issuesController.createIssues);
+router.post("/",auth(), issuesController.createIssues);
 
 export const issuesRoute = router;
