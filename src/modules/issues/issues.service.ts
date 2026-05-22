@@ -1,6 +1,7 @@
 import { pool } from "../../db";
 import type { IssueStatus, IssueType } from "../../types";
 import { AppError } from "../../utility/AppError";
+import formatSingleIssue from "../../utility/formatSingleIssue";
 import type { IIssues, IQueriesAllIssue } from "./issues.interface";
 
 const issueTypes: IssueType[] = ["bug", "feature_request"];
@@ -42,39 +43,40 @@ const getAllIssuesFromDB = async (payload: IQueriesAllIssue) => {
   //   console.log(result);
 
   const issuesData = result.rows;
-  const newIssuesData = issuesData.map(async (issue) => {
-    const reporterID = issue.reporter_id;
-    const findReporter = await pool.query(
-      `
-        SELECT * FROM users WHERE id=$1
-        `,
-      [reporterID],
-    );
-
-    const reporter = findReporter.rows[0];
-
-    // console.log(findReporter.rows[0]);
-
-    return {
-      id: issue?.id,
-      title: issue?.title,
-      description: issue?.description,
-      type: issue?.type,
-      status: issue?.status,
-      reporter: {
-        id: reporter?.id,
-        name: reporter?.name,
-        role: reporter?.role,
-      },
-      created_at: issue?.created_at,
-      updated_at: issue?.updated_at,
-    };
+  const promises = issuesData.map((issue) => {
+    return formatSingleIssue(issue);
   });
 
-  return await Promise.all(newIssuesData);
+  const newIssuesData = await Promise.all(promises);
+
+  // console.log(newIssuesData)
+
+  return newIssuesData;
+};
+
+const getSingleIssueFromDB = async (id: string) => {
+  const result = await pool.query(
+    `
+    SELECT * FROM issues WHERE id=$1
+    `,
+    [id],
+  );
+
+  if (result.rowCount === 0) {
+    throw new AppError(404, "Issue not found");
+  }
+
+  const issue = result.rows[0];
+
+  const formatedIssue = await formatSingleIssue(issue);
+
+  // console.log(formatedIssue)
+
+  return formatedIssue;
 };
 
 export const isssuesService = {
   createIssuesInDB,
   getAllIssuesFromDB,
+  getSingleIssueFromDB,
 };
