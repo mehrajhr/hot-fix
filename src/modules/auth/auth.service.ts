@@ -4,10 +4,11 @@ import type { ILoginPayload, Iuser } from "./auth.interface";
 import { pool } from "../../db";
 import jwt from "jsonwebtoken";
 import config from "../../config";
+import { userRoles } from "../../types";
 
 const createUserInDB = async (payload: Iuser) => {
   const { name, email, password, role } = payload;
-  if (role && role !== "contributor" && role !== "maintainer") {
+  if (role && role !== userRoles.contributor && role !== userRoles.maintainer) {
     throw new AppError(
       400,
       "Invalid role . Role must be contributor or maintainer",
