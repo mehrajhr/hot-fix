@@ -138,16 +138,22 @@ Follow these manual configuration routines to deploy the service locally:
 
 ### 1. Replicate Project Base
 git clone (clone url)
+
 cd hot-fix
 
 ### 2. Sync Runtime Dependencies
 npm install
 
 ### 3. Establish Local Environment Profiles
+
 Initialize a `.env` deployment profile at the project root folder layout:
+
 PORT=5000 or 3000 or your choice
+
 CONNECTION_STRING= your postgresql with neon connection string
+
 JWT_SECRET=production_level_cryptographic_secret_string_key
+
 JWT_EXPIRES_IN=1d or your choice
 
 ### 4. Execute Native Compilation Pipeline
