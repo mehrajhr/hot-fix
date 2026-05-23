@@ -7,7 +7,7 @@ const createIssues = async (req: Request, res: Response) => {
     const id = req.user.id;
     // console.log(id)
     const result = await isssuesService.createIssuesInDB(id, req.body);
-    sendResponse(res, {
+    return sendResponse(res, {
       statusCode: 201,
       success: true,
       message: "Issue created successfully",
@@ -16,7 +16,7 @@ const createIssues = async (req: Request, res: Response) => {
   } catch (error: any) {
     const statusCode = error.statusCode || 500;
     const message = statusCode === 500 ? "Something went wrong" : error.message;
-    sendResponse(res, {
+    return sendResponse(res, {
       statusCode: statusCode,
       success: false,
       message: message,
@@ -40,14 +40,14 @@ const getAllIssues = async (req: Request, res: Response) => {
 
     const result = await isssuesService.getAllIssuesFromDB(queries);
 
-    sendResponse(res, {
+    return sendResponse(res, {
       statusCode: 200,
       success: true,
       message: "Issues retrived succesfully",
       data: result,
     });
   } catch (error) {
-    sendResponse(res, {
+    return sendResponse(res, {
       statusCode: 500,
       success: false,
       message: "Something went wrong",
@@ -59,7 +59,7 @@ const getSingleIssue = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const result = await isssuesService.getSingleIssueFromDB(id as string);
-    sendResponse(res, {
+    return sendResponse(res, {
       statusCode: 200,
       success: true,
       message: "Data retrived succesfully",
@@ -68,7 +68,7 @@ const getSingleIssue = async (req: Request, res: Response) => {
   } catch (error: any) {
     const statusCode = error.statusCode || 500;
     const message = statusCode === 500 ? "Something went wrong" : error.message;
-    sendResponse(res, {
+    return sendResponse(res, {
       statusCode: statusCode,
       success: false,
       message: message,
@@ -87,7 +87,7 @@ const updateIssue = async (req: Request, res: Response) => {
       userRole,
       req.body,
     );
-    sendResponse(res, {
+    return sendResponse(res, {
       statusCode: 200,
       success: true,
       message: "Issue updated successfully",
@@ -96,7 +96,7 @@ const updateIssue = async (req: Request, res: Response) => {
   } catch (error: any) {
     const statusCode = error.statusCode || 500;
     const message = statusCode === 500 ? "Something went wrong" : error.message;
-    sendResponse(res, {
+    return sendResponse(res, {
       statusCode: statusCode,
       success: false,
       message: message,
@@ -108,7 +108,7 @@ const deleteIssue = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const result = await isssuesService.deleteIssueInDB(id as string);
-    sendResponse(res, {
+    return sendResponse(res, {
       statusCode: 200,
       success: true,
       message: "Issue deleted successfully",
@@ -116,7 +116,7 @@ const deleteIssue = async (req: Request, res: Response) => {
   } catch (error: any) {
     const statusCode = error.statusCode || 500;
     const message = statusCode === 500 ? "Something went wrong" : error.message;
-    sendResponse(res, {
+    return sendResponse(res, {
       statusCode: statusCode,
       success: false,
       message: message,

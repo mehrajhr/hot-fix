@@ -11,7 +11,7 @@ const auth = (...roles: Roles[]) => {
     // console.log(token);
 
     if (!token) {
-      sendResponse(res, {
+      return sendResponse(res, {
         statusCode: 401,
         success: false,
         message: "Unauthorized access!",
@@ -24,7 +24,7 @@ const auth = (...roles: Roles[]) => {
     ) as JwtPayload;
 
     if (!decoded?.email) {
-      sendResponse(res, {
+      return sendResponse(res, {
         statusCode: 401,
         success: false,
         message: "Unauthorized access!",
@@ -41,7 +41,7 @@ const auth = (...roles: Roles[]) => {
     );
 
     if (userData.rowCount === 0) {
-      sendResponse(res, {
+      return sendResponse(res, {
         statusCode: 404,
         success: false,
         message: "User not found",
@@ -49,7 +49,7 @@ const auth = (...roles: Roles[]) => {
     }
 
     if (roles.length && !roles.includes(decoded?.role)) {
-      sendResponse(res, {
+      return sendResponse(res, {
         statusCode: 403,
         success: false,
         message: "Access Forbidden!",
