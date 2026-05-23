@@ -91,7 +91,27 @@ const updateIssue = async (req: Request, res: Response) => {
       statusCode: 200,
       success: true,
       message: "Issue updated successfully",
-      data : result
+      data: result,
+    });
+  } catch (error: any) {
+    const statusCode = error.statusCode || 500;
+    const message = statusCode === 500 ? "Something went wrong" : error.message;
+    sendResponse(res, {
+      statusCode: statusCode,
+      success: false,
+      message: message,
+    });
+  }
+};
+
+const deleteIssue = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const result = await isssuesService.deleteIssueInDB(id as string);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Issue deleted successfully",
     });
   } catch (error: any) {
     const statusCode = error.statusCode || 500;
@@ -109,4 +129,5 @@ export const issuesController = {
   getAllIssues,
   getSingleIssue,
   updateIssue,
+  deleteIssue,
 };

@@ -93,14 +93,20 @@ const updateIssueInDB = async (
   const { status, reporter_id } = issue.rows[0];
   // console.log(status, reporter_id);
   if (userId !== reporter_id && userRole !== userRoles.maintainer) {
-    throw new AppError(403, "Access Forbidden! You can only update your own issues.");
+    throw new AppError(
+      403,
+      "Access Forbidden! You can only update your own issues.",
+    );
   }
   if (
     userId === reporter_id &&
     status !== "open" &&
     userRole !== userRoles.maintainer
   ) {
-    throw new AppError(403, "Access Forbidden! You can only update your own open issues.");
+    throw new AppError(
+      403,
+      "Access Forbidden! You can only update your own open issues.",
+    );
   }
   const { title, description, type, status: updatedStatus } = payload;
 
@@ -113,9 +119,25 @@ const updateIssueInDB = async (
   return result.rows[0];
 };
 
+const deleteIssueInDB = async (id : string) => {
+  const result = await pool.query(
+    `
+    DELETE FROM issues WHERE id=$1
+    `,
+    [id],
+  );
+  // console.log(result);
+
+  if (result.rowCount === 0) {
+    throw new AppError(404, "Issue not found");
+  }
+  return result;
+};
+
 export const isssuesService = {
   createIssuesInDB,
   getAllIssuesFromDB,
   getSingleIssueFromDB,
   updateIssueInDB,
+  deleteIssueInDB,
 };
