@@ -57,15 +57,43 @@ const getAllIssues = async (req: Request, res: Response) => {
 
 const getSingleIssue = async (req: Request, res: Response) => {
   try {
-    const {id} = req.params;
+    const { id } = req.params;
     const result = await isssuesService.getSingleIssueFromDB(id as string);
-    sendResponse(res , {
-      statusCode : 200 ,
-      success: true ,
-      message: 'Data retrived succesfully',
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Data retrived succesfully",
+      data: result,
+    });
+  } catch (error: any) {
+    const statusCode = error.statusCode || 500;
+    const message = statusCode === 500 ? "Something went wrong" : error.message;
+    sendResponse(res, {
+      statusCode: statusCode,
+      success: false,
+      message: message,
+    });
+  }
+};
+
+const updateIssue = async (req: Request, res: Response) => {
+  const { id: issueId } = req.params;
+  const { id: userId, role: userRole } = req.user;
+  // console.log(issueId , userId , userRole);
+  try {
+    const result = await isssuesService.updateIssueInDB(
+      issueId as string,
+      userId as string,
+      userRole,
+      req.body,
+    );
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Issue updated successfully",
       data : result
-    })
-  } catch (error : any) {
+    });
+  } catch (error: any) {
     const statusCode = error.statusCode || 500;
     const message = statusCode === 500 ? "Something went wrong" : error.message;
     sendResponse(res, {
@@ -79,5 +107,6 @@ const getSingleIssue = async (req: Request, res: Response) => {
 export const issuesController = {
   createIssues,
   getAllIssues,
-  getSingleIssue
+  getSingleIssue,
+  updateIssue,
 };
